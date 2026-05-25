@@ -30,24 +30,35 @@
         <!-- Player Registration / Login -->
         <div class="welcome-card" id="player-form-card">
           <h2 class="card-title">Enter Your Name</h2>
-          <div class="form-group">
-            <label for="player-name-input" class="form-label">Player Name</label>
-            <input
-              type="text"
-              id="player-name-input"
-              class="form-input"
-              placeholder="Type your name..."
-              maxlength="20"
-              autocomplete="off"
-              aria-label="Player name"
-            />
-            <span id="player-name-error" class="form-error hidden" role="alert">
-              Please enter a valid name.
-            </span>
+
+          <div id="player-input-section">
+            <div class="form-group">
+              <label for="player-name-input" class="form-label">Player Name</label>
+              <input
+                type="text"
+                id="player-name-input"
+                class="form-input"
+                placeholder="Type your name..."
+                maxlength="20"
+                autocomplete="off"
+                aria-label="Player name"
+              />
+              <span id="player-name-error" class="form-error hidden" role="alert">
+                Please enter a valid name.
+              </span>
+            </div>
+            <button id="confirm-player-btn" class="btn btn-primary btn-lg" type="button">
+              OK
+            </button>
           </div>
-          <button id="start-game-btn" class="btn btn-primary btn-lg" type="button">
-            Start Game
-          </button>
+
+          <div id="player-confirmed-section" class="hidden">
+            <p class="form-label">Playing as</p>
+            <p id="confirmed-player-name" class="topbar-player-name"></p>
+            <button id="start-game-btn" class="btn btn-primary btn-lg" type="button">
+              Start Game
+            </button>
+          </div>
         </div>
 
         <!-- Secondary Navigation -->
@@ -420,6 +431,10 @@
   </div>
   <!-- END #app -->
 
+  <script src="utils.js"></script>
+  <script src="storage.js"></script>
+  <script src="players.js"></script>
+  <script src="game.js"></script>
   <script src="main.js"></script>
 
 </body>
