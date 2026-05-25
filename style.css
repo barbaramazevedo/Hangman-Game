@@ -403,8 +403,16 @@ body::before {
   gap: var(--sp-lg);
 }
 
+#player-stats {
+  text-align: center;
+}
+
 #confirmed-player-name {
   margin: 0;
+  max-width: none;
+  overflow: visible;
+  white-space: normal;
+  text-overflow: unset;
 }
 
 /* Navigation */

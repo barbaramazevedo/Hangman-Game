@@ -2,9 +2,12 @@ function registerEvents() {
     const playerNameInput = document.getElementById("player-name-input");
     const btnConfirm = document.getElementById("confirm-player-btn");
     const btnStartGame = document.getElementById("start-game-btn");
+    const btnChangeName = document.getElementById("change-player-btn");
     const playerInputSection = document.getElementById("player-input-section");
     const playerConfirmedSection = document.getElementById("player-confirmed-section");
     const confirmedPlayerName = document.getElementById("confirmed-player-name");
+
+    let confirmedName = null;
 
     function onConfirmPlayer() {
         const name = capitalizeText(playerNameInput.value.trim());
@@ -14,17 +17,28 @@ function registerEvents() {
             return;
         }
 
-        const success = registerPlayer(name);
+        confirmedName = name;
 
-        if (success) {
-            playerInputSection.classList.add("hidden");
-            confirmedPlayerName.textContent = name;
-            playerConfirmedSection.classList.remove("hidden");
-        }
+        const player = searchPlayer(name);
+        document.getElementById("stat-wins").textContent    = player ? player.wins    : 0;
+        document.getElementById("stat-losses").textContent  = player ? player.losses  : 0;
+        document.getElementById("stat-matches").textContent = player ? player.matches : 0;
+        document.getElementById("stat-score").textContent   = player ? player.score   : 0;
+
+        playerInputSection.classList.add("hidden");
+        confirmedPlayerName.textContent = name;
+        playerConfirmedSection.classList.remove("hidden");
     }
 
     function onStartGame() {
+        registerPlayer(confirmedName);
         // iniciar jogo
+    }
+
+    function onChangeName() {
+        playerNameInput.value = "";
+        playerConfirmedSection.classList.add("hidden");
+        playerInputSection.classList.remove("hidden");
     }
 
     btnConfirm.addEventListener("click", onConfirmPlayer);
@@ -34,6 +48,7 @@ function registerEvents() {
         }
     });
     btnStartGame.addEventListener("click", onStartGame);
+    btnChangeName.addEventListener("click", onChangeName);
 }
 
 registerEvents();
