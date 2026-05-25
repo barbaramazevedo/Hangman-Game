@@ -7,6 +7,8 @@ function registerEvents() {
     const playerConfirmedSection = document.getElementById("player-confirmed-section");
     const confirmedPlayerName = document.getElementById("confirmed-player-name");
 
+    const cardTitle = document.querySelector("#player-form-card .card-title");
+
     let confirmedName = null;
 
     function onConfirmPlayer() {
@@ -25,6 +27,7 @@ function registerEvents() {
         document.getElementById("stat-matches").textContent = player ? player.matches : 0;
         document.getElementById("stat-score").textContent   = player ? player.score   : 0;
 
+        cardTitle.classList.add("hidden");
         playerInputSection.classList.add("hidden");
         confirmedPlayerName.textContent = name;
         playerConfirmedSection.classList.remove("hidden");
@@ -39,6 +42,7 @@ function registerEvents() {
         playerNameInput.value = "";
         playerConfirmedSection.classList.add("hidden");
         playerInputSection.classList.remove("hidden");
+        cardTitle.classList.remove("hidden");
     }
 
     btnConfirm.addEventListener("click", onConfirmPlayer);
