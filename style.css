@@ -396,6 +396,17 @@ body::before {
   text-align: center;
 }
 
+#player-confirmed-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-lg);
+}
+
+#confirmed-player-name {
+  margin: 0;
+}
+
 /* Navigation */
 .welcome-nav {
   display: flex;
