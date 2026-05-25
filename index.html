@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hangman Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="app">
+
+    <!-- ================================================
+         SCREEN: WELCOME
+         - Player name input and start button
+         - Navigation to ranking and history
+         ================================================ -->
+    <section id="welcome-screen" class="screen active" aria-label="Welcome Screen">
+      <div class="welcome-wrapper">
+
+        <!-- Branding / Logo -->
+        <header class="welcome-header">
+          <div class="welcome-logo" aria-hidden="true">🪢</div>
+          <h1 class="game-title">Hangman Game</h1>
+        </header>
+
+        <!-- Player Registration / Login -->
+        <div class="welcome-card" id="player-form-card">
+          <h2 class="card-title">Enter Your Name</h2>
+          <div class="form-group">
+            <label for="player-name-input" class="form-label">Player Name</label>
+            <input
+              type="text"
+              id="player-name-input"
+              class="form-input"
+              placeholder="Type your name..."
+              maxlength="20"
+              autocomplete="off"
+              aria-label="Player name"
+            />
+            <span id="player-name-error" class="form-error hidden" role="alert">
+              Please enter a valid name.
+            </span>
+          </div>
+          <button id="start-game-btn" class="btn btn-primary btn-lg" type="button">
+            Start Game
+          </button>
+        </div>
+
+        <!-- Secondary Navigation -->
+        <nav class="welcome-nav" aria-label="Secondary navigation">
+          <button id="view-ranking-btn" class="btn btn-outline" type="button">
+            <span aria-hidden="true">🏆</span> Ranking
+          </button>
+          <button id="view-history-btn" class="btn btn-outline" type="button">
+            <span aria-hidden="true">📋</span> Match History
+          </button>
+        </nav>
+
+      </div>
+    </section>
+    <!-- END SCREEN: WELCOME -->
+
+
+    <!-- ================================================
+         SCREEN: GAME
+         - Top bar with player info and stats
+         - Left panel: hangman drawing, attempts, wrong letters
+         - Right panel: word display, status, keyboard, actions
+         ================================================ -->
+    <section id="game-screen" class="screen hidden" aria-label="Game Screen">
+
+      <!-- Top Bar -->
+      <header class="game-topbar">
+        <button id="back-to-welcome-btn" class="btn btn-ghost btn-sm" type="button" aria-label="Back to welcome screen">
+          ← Back
+        </button>
+
+        <div class="topbar-player-info">
+          <span class="topbar-label">Player</span>
+          <span id="current-player-name" class="topbar-player-name">---</span>
+        </div>
+
+        <div class="topbar-stats" aria-label="Player statistics">
+          <div class="stat-badge">
+            <span class="stat-label">Score</span>
+            <span id="player-score" class="stat-value">0</span>
+          </div>
+          <div class="stat-badge">
+            <span class="stat-label">Wins</span>
+            <span id="player-wins" class="stat-value stat-wins">0</span>
+          </div>
+          <div class="stat-badge">
+            <span class="stat-label">Losses</span>
+            <span id="player-losses" class="stat-value stat-losses">0</span>
+          </div>
+          <div class="stat-badge">
+            <span class="stat-label">Matches</span>
+            <span id="player-matches" class="stat-value">0</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Game Content -->
+      <main class="game-main" id="game-main">
+
+        <!-- ---- LEFT PANEL: Hangman Illustration ---- -->
+        <div class="game-panel panel-hangman" id="panel-hangman">
+
+          <!-- SVG Drawing Area -->
+          <div class="hangman-drawing-wrapper">
+            <svg
+              id="hangman-svg"
+              class="hangman-svg"
+              viewBox="0 0 220 265"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-label="Hangman illustration"
+              role="img"
+            >
+              <!-- Gallows structure — always visible -->
+              <line id="gallows-base"  class="gallows-part" x1="20"  y1="255" x2="200" y2="255" />
+              <line id="gallows-pole"  class="gallows-part" x1="60"  y1="255" x2="60"  y2="15"  />
+              <line id="gallows-top"   class="gallows-part" x1="60"  y1="15"  x2="150" y2="15"  />
+              <line id="gallows-rope"  class="gallows-part" x1="150" y1="15"  x2="150" y2="45"  />
+              <line id="gallows-brace" class="gallows-part gallows-brace" x1="60" y1="50" x2="100" y2="15" />
+
+              <!-- Body parts — hidden initially, shown one-by-one on wrong guesses -->
+              <circle id="hangman-head"      class="hangman-part" cx="150" cy="63"  r="19" />
+              <line   id="hangman-body"      class="hangman-part" x1="150" y1="82"  x2="150" y2="158" />
+              <line   id="hangman-left-arm"  class="hangman-part" x1="150" y1="102" x2="112" y2="132" />
+              <line   id="hangman-right-arm" class="hangman-part" x1="150" y1="102" x2="188" y2="132" />
+              <line   id="hangman-left-leg"  class="hangman-part" x1="150" y1="158" x2="112" y2="205" />
+              <line   id="hangman-right-leg" class="hangman-part" x1="150" y1="158" x2="188" y2="205" />
+            </svg>
+          </div>
+
+          <!-- Attempts Remaining -->
+          <div class="attempts-counter" id="attempts-counter" aria-live="polite" aria-label="Attempts remaining">
+            <span class="attempts-label">Attempts Left</span>
+            <span id="attempts-remaining" class="attempts-number">6</span>
+            <div class="attempts-dots" id="attempts-dots" aria-hidden="true">
+              <span class="attempt-dot" data-dot="1"></span>
+              <span class="attempt-dot" data-dot="2"></span>
+              <span class="attempt-dot" data-dot="3"></span>
+              <span class="attempt-dot" data-dot="4"></span>
+              <span class="attempt-dot" data-dot="5"></span>
+              <span class="attempt-dot" data-dot="6"></span>
+            </div>
+          </div>
+
+          <!-- Wrong Letters -->
+          <div class="wrong-letters-section" id="wrong-letters-section">
+            <h3 class="section-label">Wrong Letters</h3>
+            <div
+              id="wrong-letters-container"
+              class="wrong-letters-list"
+              aria-live="polite"
+              aria-label="Wrong letters guessed"
+            >
+              <!-- .wrong-letter-chip elements injected by JS -->
+            </div>
+          </div>
+
+        </div>
+        <!-- END LEFT PANEL -->
+
+
+        <!-- ---- RIGHT PANEL: Word Display + Keyboard ---- -->
+        <div class="game-panel panel-word-keyboard" id="panel-word-keyboard">
+
+          <!-- Category Hint -->
+          <div class="word-category-hint" id="word-category-hint" aria-label="Word category">
+            Category: <span id="word-category" class="category-value">---</span>
+          </div>
+
+          <!-- Hidden Word (letter slots) -->
+          <div class="word-display-wrapper">
+            <div
+              id="word-display"
+              class="word-display"
+              role="group"
+              aria-label="Word to guess"
+            >
+              <!--
+                .letter-slot elements injected dynamically by JS.
+                Example:
+                  <span class="letter-slot revealed" data-index="0">H</span>
+                  <span class="letter-slot hidden-letter" data-index="1"></span>
+                  <span class="letter-slot space" data-index="2"></span>
+              -->
+            </div>
+          </div>
+
+          <!-- ---- Status Messages ---- -->
+          <div id="status-area" class="status-area" aria-live="assertive">
+
+            <div id="status-loading" class="status-message status-loading hidden" role="status">
+              <div class="status-spinner" aria-hidden="true"></div>
+              <span class="status-text">Loading word...</span>
+            </div>
+
+            <div id="status-win" class="status-message status-win hidden" role="alert">
+              <span class="status-emoji" aria-hidden="true">🏆</span>
+              <span class="status-text">You Won!</span>
+              <p class="status-sub">Congratulations! Keep it up!</p>
+            </div>
+
+            <div id="status-lose" class="status-message status-lose hidden" role="alert">
+              <span class="status-emoji" aria-hidden="true">💀</span>
+              <span class="status-text">You Lost!</span>
+              <p class="status-sub">
+                The word was: <strong id="revealed-word" class="revealed-word">---</strong>
+              </p>
+            </div>
+
+            <div id="status-error" class="status-message status-error hidden" role="alert">
+              <span class="status-emoji" aria-hidden="true">⚠️</span>
+              <span class="status-text">Oops! Something went wrong.</span>
+              <p class="status-sub">Please try again.</p>
+            </div>
+
+          </div>
+          <!-- END Status Messages -->
+
+
+          <!-- ---- Virtual Keyboard (A–Z, QWERTY layout) ---- -->
+          <div id="virtual-keyboard" class="virtual-keyboard" aria-label="Letter keyboard">
+
+            <!-- Row 1: Q W E R T Y U I O P -->
+            <div class="keyboard-row" id="keyboard-row-1">
+              <button class="key-btn" data-letter="Q" aria-label="Q" type="button">Q</button>
+              <button class="key-btn" data-letter="W" aria-label="W" type="button">W</button>
+              <button class="key-btn" data-letter="E" aria-label="E" type="button">E</button>
+              <button class="key-btn" data-letter="R" aria-label="R" type="button">R</button>
+              <button class="key-btn" data-letter="T" aria-label="T" type="button">T</button>
+              <button class="key-btn" data-letter="Y" aria-label="Y" type="button">Y</button>
+              <button class="key-btn" data-letter="U" aria-label="U" type="button">U</button>
+              <button class="key-btn" data-letter="I" aria-label="I" type="button">I</button>
+              <button class="key-btn" data-letter="O" aria-label="O" type="button">O</button>
+              <button class="key-btn" data-letter="P" aria-label="P" type="button">P</button>
+            </div>
+
+            <!-- Row 2: A S D F G H J K L -->
+            <div class="keyboard-row" id="keyboard-row-2">
+              <button class="key-btn" data-letter="A" aria-label="A" type="button">A</button>
+              <button class="key-btn" data-letter="S" aria-label="S" type="button">S</button>
+              <button class="key-btn" data-letter="D" aria-label="D" type="button">D</button>
+              <button class="key-btn" data-letter="F" aria-label="F" type="button">F</button>
+              <button class="key-btn" data-letter="G" aria-label="G" type="button">G</button>
+              <button class="key-btn" data-letter="H" aria-label="H" type="button">H</button>
+              <button class="key-btn" data-letter="J" aria-label="J" type="button">J</button>
+              <button class="key-btn" data-letter="K" aria-label="K" type="button">K</button>
+              <button class="key-btn" data-letter="L" aria-label="L" type="button">L</button>
+            </div>
+
+            <!-- Row 3: Z X C V B N M -->
+            <div class="keyboard-row" id="keyboard-row-3">
+              <button class="key-btn" data-letter="Z" aria-label="Z" type="button">Z</button>
+              <button class="key-btn" data-letter="X" aria-label="X" type="button">X</button>
+              <button class="key-btn" data-letter="C" aria-label="C" type="button">C</button>
+              <button class="key-btn" data-letter="V" aria-label="V" type="button">V</button>
+              <button class="key-btn" data-letter="B" aria-label="B" type="button">B</button>
+              <button class="key-btn" data-letter="N" aria-label="N" type="button">N</button>
+              <button class="key-btn" data-letter="M" aria-label="M" type="button">M</button>
+            </div>
+
+          </div>
+          <!-- END Virtual Keyboard -->
+
+
+          <!-- Game Action Buttons -->
+          <div class="game-actions" id="game-actions">
+            <button id="new-round-btn" class="btn btn-primary" type="button">
+              ↻ New Round
+            </button>
+            <button id="reset-game-btn" class="btn btn-ghost" type="button">
+              ⟲ Reset Game
+            </button>
+          </div>
+
+        </div>
+        <!-- END RIGHT PANEL -->
+
+      </main>
+
+    </section>
+    <!-- END SCREEN: GAME -->
+
+
+    <!-- ================================================
+         SCREEN: RANKING
+         - Sortable table with all registered players
+         - Score, wins, losses, total matches
+         - Clear ranking button
+         ================================================ -->
+    <section id="ranking-screen" class="screen hidden" aria-label="Ranking Screen">
+
+      <header class="inner-screen-header">
+        <button id="back-from-ranking-btn" class="btn btn-ghost btn-sm" type="button">← Back</button>
+        <h2 class="inner-screen-title">
+          <span aria-hidden="true">🏆</span> Ranking
+        </h2>
+        <button id="clear-ranking-btn" class="btn btn-danger btn-sm" type="button">Clear</button>
+      </header>
+
+      <div class="inner-screen-body">
+
+        <!-- Ranking Table -->
+        <div class="table-wrapper" id="ranking-table-wrapper">
+          <table id="ranking-table" class="data-table" aria-label="Player rankings">
+            <thead>
+              <tr>
+                <th scope="col" class="col-rank">#</th>
+                <th scope="col" class="col-player">Player</th>
+                <th scope="col" class="col-score">Score</th>
+                <th scope="col" class="col-wins">Wins</th>
+                <th scope="col" class="col-losses">Losses</th>
+                <th scope="col" class="col-matches">Matches</th>
+              </tr>
+            </thead>
+            <tbody id="ranking-list">
+              <!--
+                Rows injected dynamically by JS. Example row:
+                <tr class="ranking-row">
+                  <td class="col-rank"><span class="rank-badge">1</span></td>
+                  <td class="col-player">PlayerName</td>
+                  <td class="col-score">1200</td>
+                  <td class="col-wins">10</td>
+                  <td class="col-losses">2</td>
+                  <td class="col-matches">12</td>
+                </tr>
+              -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Empty State -->
+        <div id="ranking-empty" class="empty-state hidden" role="status">
+          <span class="empty-icon" aria-hidden="true">🏆</span>
+          <p class="empty-text">No players registered yet.</p>
+          <p class="empty-sub">Play a game to appear on the ranking!</p>
+        </div>
+
+      </div>
+
+    </section>
+    <!-- END SCREEN: RANKING -->
+
+
+    <!-- ================================================
+         SCREEN: MATCH HISTORY
+         - Filterable list of past matches
+         - Player, word guessed, result, date, score
+         - Clear history button
+         ================================================ -->
+    <section id="history-screen" class="screen hidden" aria-label="Match History Screen">
+
+      <header class="inner-screen-header">
+        <button id="back-from-history-btn" class="btn btn-ghost btn-sm" type="button">← Back</button>
+        <h2 class="inner-screen-title">
+          <span aria-hidden="true">📋</span> Match History
+        </h2>
+        <button id="clear-history-btn" class="btn btn-danger btn-sm" type="button">Clear</button>
+      </header>
+
+      <div class="inner-screen-body">
+
+        <!-- Filter Bar -->
+        <div class="history-filter-bar" id="history-filter-bar">
+          <input
+            type="text"
+            id="history-filter-input"
+            class="form-input input-sm"
+            placeholder="Filter by player or word..."
+            aria-label="Filter match history"
+          />
+          <select id="history-filter-result" class="form-select select-sm" aria-label="Filter by result">
+            <option value="all">All Results</option>
+            <option value="win">Wins Only</option>
+            <option value="lose">Losses Only</option>
+          </select>
+        </div>
+
+        <!-- History Cards Grid -->
+        <div id="history-list" class="history-list" aria-label="Match history list">
+          <!--
+            Cards injected dynamically by JS. Example card:
+            <article class="history-card result-win">
+              <div class="history-card-header">
+                <span class="history-player-name">PlayerName</span>
+                <span class="history-result-badge win">WIN</span>
+              </div>
+              <div class="history-card-body">
+                <span class="history-word-label">Word:</span>
+                <span class="history-word-value">ELEPHANT</span>
+              </div>
+              <div class="history-card-footer">
+                <span class="history-score">+100 pts</span>
+                <span class="history-date">2026-05-25</span>
+              </div>
+            </article>
+          -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="history-empty" class="empty-state hidden" role="status">
+          <span class="empty-icon" aria-hidden="true">📋</span>
+          <p class="empty-text">No matches played yet.</p>
+          <p class="empty-sub">Start a game to build your history!</p>
+        </div>
+
+      </div>
+
+    </section>
+    <!-- END SCREEN: HISTORY -->
+
+  </div>
+  <!-- END #app -->
+
+  <script src="main.js"></script>
+
+</body>
+</html>
