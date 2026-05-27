@@ -1,4 +1,4 @@
-# 🎮 Hangman Game Multiplayer
+# 🎮 Hangman Game
 
 ## 📖 About the Project
 
