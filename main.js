@@ -79,9 +79,30 @@ function registerRankingEvents() {
     });
 }
 
+function registerMatchHistory() {
+    document.getElementById("view-history-btn").addEventListener("click", () => {
+        renderHistory();
+        showScreen("history-screen");
+    });
+
+    document.getElementById("back-from-history-btn").addEventListener("click", () => {
+        showScreen("welcome-screen");
+    });
+
+    document.getElementById("clear-history-btn").addEventListener("click", () => {
+        if (!confirm("Clear all match history? This cannot be undone.")) return;
+        clearHistory();
+        renderHistory();
+    });
+
+    document.getElementById("history-filter-input").addEventListener("input", renderHistory);
+    document.getElementById("history-filter-result").addEventListener("change", renderHistory);
+}
+
 function registerEvents() {
     registerPlayerFormEvents();
     registerRankingEvents();
+    registerMatchHistory();
 }
 
 registerEvents();
