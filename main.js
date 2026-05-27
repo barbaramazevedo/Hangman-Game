@@ -73,9 +73,9 @@ function registerRankingEvents() {
     });
 
     document.getElementById("clear-ranking-btn").addEventListener("click", () => {
+        if (!confirm("Clear all ranking data? This cannot be undone.")) return;
         clearRanking();
         renderizarRanking();
-        showScreen("ranking-screen");
     });
 }
 

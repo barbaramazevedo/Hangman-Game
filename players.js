@@ -31,5 +31,3 @@ function updateScore(name, won) {
     savePlayers(players);
     return true;
 }
-
-

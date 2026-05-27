@@ -20,5 +20,5 @@ function clearHistory() {
 }
 
 function clearRanking() {
-    
+    localStorage.clear();
 }

@@ -42,7 +42,3 @@ function updateLeaderboard() {
     empty.classList.add("hidden");
     list.innerHTML = top3.map((p, i) => createRowRanking(p, i + 1)).join("");
 }
-
-function clearRanking() {
-    localStorage.clear();
-}
