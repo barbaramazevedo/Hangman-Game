@@ -7,18 +7,19 @@ function loadPlayers() {
     return data ? JSON.parse(data) : [];
 }
 
-function saveHistory() {
-
+function saveHistory(history) {
+    localStorage.setItem("history", JSON.stringify(history));
 }
 
 function loadHistory() {
-
+    const data = localStorage.getItem("history");
+    return data ? JSON.parse(data) : [];
 }
 
 function clearHistory() {
-
+    localStorage.removeItem("history");
 }
 
 function clearRanking() {
-    localStorage.clear();
+    localStorage.removeItem("players");
 }
