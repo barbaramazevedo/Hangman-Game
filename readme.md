@@ -2,7 +2,7 @@
 
 ## 📖 About the Project
 
-Hangman Game Multiplayer is a responsive browser game developed with **HTML, CSS, and Vanilla JavaScript**.
+Hangman Game is a responsive browser game developed with **HTML, CSS, and Vanilla JavaScript**.
 
 The project consumes a public API to generate random English words and allows multiple local players to participate in different rounds while saving their scores, victories, defeats, and match history using `localStorage`.
 
