@@ -7,18 +7,18 @@ function loadPlayers() {
     return data ? JSON.parse(data) : [];
 }
 
-function salvarHistorico() {
+function saveHistory() {
 
 }
 
-function carregarHistorico() {
+function loadHistory() {
 
 }
 
-function limparHistorico() {
+function clearHistory() {
 
 }
 
-function limparRanking() {
+function clearRanking() {
     
 }
