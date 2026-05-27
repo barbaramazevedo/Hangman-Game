@@ -1,0 +1,7 @@
+function renderHistory() {
+
+}
+
+function addMatchToHistory() {
+    
+}
