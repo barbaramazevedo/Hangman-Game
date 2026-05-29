@@ -36,6 +36,8 @@ async function startRound(playerName) {
     hideAllStatuses();
     showStatus("loading");
 
+    document.getElementById("current-player-name").textContent = playerName;
+
     const wordData = await fetchWord();
 
     hideAllStatuses();
