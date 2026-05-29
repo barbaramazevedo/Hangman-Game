@@ -1,4 +1,4 @@
-function registerPlayerFormEvents() {
+function registerEvents() {
     const playerNameInput = document.getElementById("player-name-input");
     const btnConfirm = document.getElementById("confirm-player-btn");
     const btnStartGame = document.getElementById("start-game-btn");
@@ -6,6 +6,7 @@ function registerPlayerFormEvents() {
     const playerInputSection = document.getElementById("player-input-section");
     const playerConfirmedSection = document.getElementById("player-confirmed-section");
     const confirmedPlayerName = document.getElementById("confirmed-player-name");
+
     const cardTitle = document.querySelector("#player-form-card .card-title");
 
     let confirmedName = null;
@@ -34,7 +35,18 @@ function registerPlayerFormEvents() {
 
     function onStartGame() {
         registerPlayer(confirmedName);
-        // iniciar jogo
+        showScreen("game-screen");
+        startRound(confirmedName);
+    }
+
+    function showScreen(id) {
+        document.querySelectorAll(".screen").forEach(function(s) {
+            s.classList.remove("active");
+            s.classList.add("hidden");
+        });
+        const target = document.getElementById(id);
+        target.classList.remove("hidden");
+        target.classList.add("active");
     }
 
     function onChangeName() {
@@ -45,64 +57,19 @@ function registerPlayerFormEvents() {
     }
 
     btnConfirm.addEventListener("click", onConfirmPlayer);
-    playerNameInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") onConfirmPlayer();
+    playerNameInput.addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            onConfirmPlayer();
+        }
     });
     btnStartGame.addEventListener("click", onStartGame);
     btnChangeName.addEventListener("click", onChangeName);
-}
-
-function showScreen(screenId) {
-    document.querySelectorAll(".screen").forEach(s => {
-        s.classList.remove("active");
-        s.classList.add("hidden");
+    document.querySelectorAll(".key-btn").forEach(function(btn) {
+        btn.addEventListener("click", function() {
+            checkLetter(btn.dataset.letter);
+        });
     });
-    const target = document.getElementById(screenId);
-    target.classList.remove("hidden");
-    target.classList.add("active");
-}
-
-function registerRankingEvents() {
-    document.getElementById("view-ranking-btn").addEventListener("click", () => {
-        renderizarRanking();
-        showScreen("ranking-screen");
-    });
-
-    document.getElementById("back-from-ranking-btn").addEventListener("click", () => {
-        showScreen("welcome-screen");
-    });
-
-    document.getElementById("clear-ranking-btn").addEventListener("click", () => {
-        if (!confirm("Clear all ranking data? This cannot be undone.")) return;
-        clearRanking();
-        renderizarRanking();
-    });
-}
-
-function registerMatchHistory() {
-    document.getElementById("view-history-btn").addEventListener("click", () => {
-        renderHistory();
-        showScreen("history-screen");
-    });
-
-    document.getElementById("back-from-history-btn").addEventListener("click", () => {
-        showScreen("welcome-screen");
-    });
-
-    document.getElementById("clear-history-btn").addEventListener("click", () => {
-        if (!confirm("Clear all match history? This cannot be undone.")) return;
-        clearHistory();
-        renderHistory();
-    });
-
-    document.getElementById("history-filter-input").addEventListener("input", renderHistory);
-    document.getElementById("history-filter-result").addEventListener("change", renderHistory);
-}
-
-function registerEvents() {
-    registerPlayerFormEvents();
-    registerRankingEvents();
-    registerMatchHistory();
+    document.getElementById("hint-btn").addEventListener("click", useHint);
 }
 
 registerEvents();
