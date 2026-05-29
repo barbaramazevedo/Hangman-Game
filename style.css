@@ -416,16 +416,49 @@ body::before {
   margin-top: var(--sp-md);
 }
 
-#player-stats {
+#confirmed-player-name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 800;
+  background: linear-gradient(130deg, var(--color-accent) 0%, var(--color-blue) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   text-align: center;
 }
 
-#confirmed-player-name {
+#player-confirmed-section > div {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-sm) var(--sp-lg);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--r-lg);
+  padding: var(--sp-md) var(--sp-lg);
+  width: 100%;
+}
+
+#player-confirmed-section > div p {
   margin: 0;
-  max-width: none;
-  overflow: visible;
-  white-space: normal;
-  text-overflow: unset;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-sm);
+}
+
+#player-confirmed-section > div p span {
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+#player-confirmed-section .btn-primary {
+  width: 100%;
+}
+
+#player-confirmed-section .btn-ghost {
+  width: 100%;
 }
 
 /* Navigation */
@@ -523,7 +556,7 @@ body::before {
 
 /* Game Main Layout — two-column grid */
 .game-main {
-  flex: 1;
+  align-self: start;
   display: grid;
   grid-template-columns: 300px 1fr;
   gap: var(--sp-lg);
@@ -531,7 +564,7 @@ body::before {
   max-width: var(--max-w);
   margin: 0 auto;
   width: 100%;
-  align-items: start;
+  align-items: stretch;
 }
 
 /* Shared panel card */
@@ -548,6 +581,7 @@ body::before {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-between;
   gap: var(--sp-lg);
 }
 
