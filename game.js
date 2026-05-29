@@ -19,10 +19,6 @@ const HANGMAN_PARTS = [
 ];
 
 
-function fetchWord() {
-    return getRandomWord();
-}
-
 async function startRound(playerName) {
     currentPlayer = playerName;
     guessedLetters = [];
@@ -37,16 +33,18 @@ async function startRound(playerName) {
     clearWrongLetters();
     clearWordDisplay();
     updateAttemptsDisplay();
+    hideAllStatuses();
+    showStatus("loading");
 
-    const wordData = fetchWord();
+    const wordData = await fetchWord();
 
+    hideAllStatuses();
     currentWord = wordData.word;
     currentDefinition = wordData.definition;
     document.getElementById("word-category").textContent = wordData.category;
 
     gameActive = true;
 
-    hideAllStatuses();
     document.getElementById("hint-text").classList.add("hidden");
     document.getElementById("hint-btn").disabled = false;
     document.getElementById("hint-btn").textContent = "💡 Hint (−1 attempt) [2 left]";
