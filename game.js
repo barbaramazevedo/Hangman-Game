@@ -5,6 +5,7 @@ let attemptsLeft = 6;
 let gameActive = false;
 let currentPlayer = null;
 let currentDefinition = "";
+let hintsUsed = 0;
 
 const MAX_ATTEMPTS = 6;
 
@@ -29,6 +30,8 @@ async function startRound(playerName) {
     attemptsLeft = MAX_ATTEMPTS;
     gameActive = false;
 
+    hintsUsed = 0;
+
     resetHangman();
     resetKeyboard();
     clearWrongLetters();
@@ -46,6 +49,7 @@ async function startRound(playerName) {
     hideAllStatuses();
     document.getElementById("hint-text").classList.add("hidden");
     document.getElementById("hint-btn").disabled = false;
+    document.getElementById("hint-btn").textContent = "💡 Hint (−1 attempt) [2 left]";
     renderWordDisplay();
 }
 
@@ -64,6 +68,9 @@ function checkLetter(letter) {
 
         if (checkVictory()) {
             gameActive = false;
+            addMatchToHistory(currentPlayer, currentWord, true);
+            updateScore(currentPlayer, true);
+            refreshPlayerUI(currentPlayer);
             showStatus("win");
             disableKeyboard();
         }
@@ -78,6 +85,9 @@ function checkLetter(letter) {
 
         if (attemptsLeft === 0) {
             gameActive = false;
+            addMatchToHistory(currentPlayer, currentWord, false);
+            updateScore(currentPlayer, false);
+            refreshPlayerUI(currentPlayer);
             document.getElementById("revealed-word").textContent = currentWord;
             showStatus("lose");
             disableKeyboard();
@@ -178,17 +188,43 @@ function hideAllStatuses() {
 
 function useHint() {
     if (!gameActive) return;
-    if (attemptsLeft <= 2) {
+    if (hintsUsed >= 2) return;
+    if (attemptsLeft <= 1) {
         alert("Not enough attempts to use a hint!");
         return;
     }
-    attemptsLeft -= 2;
+
+    hintsUsed++;
+    attemptsLeft--;
     updateAttemptsDisplay();
     revealHangmanPart();
-    revealHangmanPart();
-    const hintText = document.getElementById("hint-text");
-    hintText.textContent = currentDefinition;
-    hintText.classList.remove("hidden");
-    document.getElementById("hint-btn").disabled = true;
+
+    const btn = document.getElementById("hint-btn");
+
+    if (hintsUsed === 1) {
+        const hintText = document.getElementById("hint-text");
+        hintText.textContent = currentDefinition;
+        hintText.classList.remove("hidden");
+        btn.textContent = "💡 Hint (−1 attempt) [1 left]";
+    } else {
+        const hidden = currentWord.split("").filter(l => !guessedLetters.includes(l));
+        if (hidden.length > 0) {
+            const letter = hidden[Math.floor(Math.random() * hidden.length)];
+            checkLetter(letter);
+        }
+        btn.disabled = true;
+        btn.textContent = "💡 Hint (no uses left)";
+    }
 }
 
+function refreshPlayerUI(name) {
+    const player = searchPlayer(name);
+    if (!player) return;
+
+    document.getElementById("player-score").textContent   = player.score;
+    document.getElementById("player-wins").textContent    = player.wins;
+    document.getElementById("player-losses").textContent  = player.losses;
+    document.getElementById("player-matches").textContent = player.matches;
+
+    renderizarRanking();
+}

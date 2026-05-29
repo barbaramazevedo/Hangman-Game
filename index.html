@@ -27,7 +27,7 @@ WELCOME SCREEN
       <h1 class="game-title">Hangman Game</h1>
     </header>
 
-    <div class="welcome-card">
+    <div id="player-form-card" class="welcome-card">
 
       <div id="player-input-section">
         <h2 class="card-title">Enter Your Name</h2>
@@ -75,16 +75,28 @@ GAME SCREEN
 
   <button id="back-to-welcome-btn" class="btn btn-ghost btn-sm">←</button>
 
-  <div>
-    <span>Player</span>
-    <span id="current-player-name">---</span>
+  <div class="topbar-player-info">
+    <span class="topbar-label">Player</span>
+    <span id="current-player-name" class="topbar-player-name">---</span>
   </div>
 
   <div class="topbar-stats">
-    <span>Score <b id="player-score">0</b></span>
-    <span>Wins <b id="player-wins">0</b></span>
-    <span>Losses <b id="player-losses">0</b></span>
-    <span>Matches <b id="player-matches">0</b></span>
+    <div class="stat-badge">
+      <span class="stat-label">Score</span>
+      <span id="player-score" class="stat-value">0</span>
+    </div>
+    <div class="stat-badge">
+      <span class="stat-label">Wins</span>
+      <span id="player-wins" class="stat-value stat-wins">0</span>
+    </div>
+    <div class="stat-badge">
+      <span class="stat-label">Losses</span>
+      <span id="player-losses" class="stat-value stat-losses">0</span>
+    </div>
+    <div class="stat-badge">
+      <span class="stat-label">Matches</span>
+      <span id="player-matches" class="stat-value">0</span>
+    </div>
   </div>
 
 </header>
@@ -92,55 +104,123 @@ GAME SCREEN
 
 <main class="game-main">
 
-<!-- LEFT -->
-<div class="game-panel">
+<!-- LEFT: Hangman -->
+<div class="game-panel panel-hangman">
 
-  <div id="attempts-remaining">6</div>
+  <div class="hangman-drawing-wrapper">
+    <svg class="hangman-svg" viewBox="0 0 200 250">
+      <line class="gallows-part" x1="20" y1="240" x2="180" y2="240"/>
+      <line class="gallows-part" x1="60" y1="240" x2="60" y2="20"/>
+      <line class="gallows-part" x1="60" y1="20" x2="130" y2="20"/>
+      <line class="gallows-part" x1="130" y1="20" x2="130" y2="50"/>
+      <circle id="hangman-head" class="hangman-part" cx="130" cy="65" r="15"/>
+      <line id="hangman-body" class="hangman-part" x1="130" y1="80" x2="130" y2="150"/>
+      <line id="hangman-left-arm" class="hangman-part" x1="130" y1="100" x2="100" y2="130"/>
+      <line id="hangman-right-arm" class="hangman-part" x1="130" y1="100" x2="160" y2="130"/>
+      <line id="hangman-left-leg" class="hangman-part" x1="130" y1="150" x2="100" y2="190"/>
+      <line id="hangman-right-leg" class="hangman-part" x1="130" y1="150" x2="160" y2="190"/>
+    </svg>
+  </div>
 
-  <div id="wrong-letters-container"></div>
+  <div class="attempts-counter">
+    <span class="attempts-label">Attempts left</span>
+    <span id="attempts-remaining" class="attempts-number">6</span>
+    <div class="attempts-dots">
+      <span class="attempt-dot" data-dot="1"></span>
+      <span class="attempt-dot" data-dot="2"></span>
+      <span class="attempt-dot" data-dot="3"></span>
+      <span class="attempt-dot" data-dot="4"></span>
+      <span class="attempt-dot" data-dot="5"></span>
+      <span class="attempt-dot" data-dot="6"></span>
+    </div>
+  </div>
+
+  <div class="wrong-letters-section">
+    <p class="section-label">Wrong letters</p>
+    <div id="wrong-letters-container" class="wrong-letters-list"></div>
+  </div>
 
 </div>
 
-<!-- RIGHT -->
-<div class="game-panel">
+<!-- RIGHT: Word + Keyboard -->
+<div class="game-panel panel-word-keyboard">
 
-  <div id="word-category">---</div>
+  <p class="word-category-hint">Category: <span id="word-category" class="category-value">---</span></p>
 
-  <div id="word-display"></div>
+  <div class="word-display-wrapper">
+    <div id="word-display" class="word-display"></div>
+  </div>
 
-  <div id="status-area"></div>
+  <div class="status-area">
+    <div id="status-loading" class="status-message status-loading hidden">
+      <div class="status-spinner"></div>
+    </div>
 
-  <!-- VIRTUAL KEYBOARD (CLICK ONLY) -->
-  <div id="virtual-keyboard">
+    <div id="status-win" class="status-message status-win hidden">
+      <span class="status-emoji">🎉</span>
+      <span class="status-text">You won!</span>
+      <div style="display:flex;gap:0.5rem;margin-top:0.5rem">
+        <button id="new-round-btn" class="btn btn-primary btn-sm">New Round</button>
+        <button id="reset-game-btn" class="btn btn-ghost btn-sm">Change Player</button>
+      </div>
+    </div>
 
-    <!-- JS will still work with your system -->
-    <button class="key-btn" data-letter="A">A</button>
-    <button class="key-btn" data-letter="B">B</button>
-    <button class="key-btn" data-letter="C">C</button>
-    <button class="key-btn" data-letter="D">D</button>
-    <button class="key-btn" data-letter="E">E</button>
-    <button class="key-btn" data-letter="F">F</button>
-    <button class="key-btn" data-letter="G">G</button>
-    <button class="key-btn" data-letter="H">H</button>
-    <button class="key-btn" data-letter="I">I</button>
-    <button class="key-btn" data-letter="J">J</button>
-    <button class="key-btn" data-letter="K">K</button>
-    <button class="key-btn" data-letter="L">L</button>
-    <button class="key-btn" data-letter="M">M</button>
-    <button class="key-btn" data-letter="N">N</button>
-    <button class="key-btn" data-letter="O">O</button>
-    <button class="key-btn" data-letter="P">P</button>
-    <button class="key-btn" data-letter="Q">Q</button>
-    <button class="key-btn" data-letter="R">R</button>
-    <button class="key-btn" data-letter="S">S</button>
-    <button class="key-btn" data-letter="T">T</button>
-    <button class="key-btn" data-letter="U">U</button>
-    <button class="key-btn" data-letter="V">V</button>
-    <button class="key-btn" data-letter="W">W</button>
-    <button class="key-btn" data-letter="X">X</button>
-    <button class="key-btn" data-letter="Y">Y</button>
-    <button class="key-btn" data-letter="Z">Z</button>
+    <div id="status-lose" class="status-message status-lose hidden">
+      <span class="status-emoji">😢</span>
+      <span class="status-text">You lost!</span>
+      <span class="status-sub">The word was: <span id="revealed-word" class="revealed-word"></span></span>
+      <div style="display:flex;gap:0.5rem;margin-top:0.5rem">
+        <button id="try-again-btn" class="btn btn-primary btn-sm">Try Again</button>
+        <button id="change-player-btn2" class="btn btn-ghost btn-sm">Change Player</button>
+      </div>
+    </div>
 
+    <div id="status-error" class="status-message status-error hidden">
+      <span class="status-emoji">⚠️</span>
+      <span class="status-text">Error loading word.</span>
+    </div>
+  </div>
+
+  <div id="hint-section">
+    <div id="hint-text" class="hidden" style="font-size:0.82rem;color:var(--color-text-muted);text-align:center;padding:0.5rem 0"></div>
+    <div style="text-align:center">
+      <button id="hint-btn" class="btn btn-outline btn-sm">💡 Hint (−2 attempts)</button>
+    </div>
+  </div>
+
+  <div id="virtual-keyboard" class="virtual-keyboard">
+    <div class="keyboard-row">
+      <button class="key-btn" data-letter="Q">Q</button>
+      <button class="key-btn" data-letter="W">W</button>
+      <button class="key-btn" data-letter="E">E</button>
+      <button class="key-btn" data-letter="R">R</button>
+      <button class="key-btn" data-letter="T">T</button>
+      <button class="key-btn" data-letter="Y">Y</button>
+      <button class="key-btn" data-letter="U">U</button>
+      <button class="key-btn" data-letter="I">I</button>
+      <button class="key-btn" data-letter="O">O</button>
+      <button class="key-btn" data-letter="P">P</button>
+    </div>
+    <div class="keyboard-row">
+      <button class="key-btn" data-letter="A">A</button>
+      <button class="key-btn" data-letter="S">S</button>
+      <button class="key-btn" data-letter="D">D</button>
+      <button class="key-btn" data-letter="F">F</button>
+      <button class="key-btn" data-letter="G">G</button>
+      <button class="key-btn" data-letter="H">H</button>
+      <button class="key-btn" data-letter="J">J</button>
+      <button class="key-btn" data-letter="K">K</button>
+      <button class="key-btn" data-letter="L">L</button>
+    </div>
+    <div class="keyboard-row">
+      <button class="key-btn" data-letter="Z">Z</button>
+      <button class="key-btn" data-letter="X">X</button>
+      <button class="key-btn" data-letter="C">C</button>
+      <button class="key-btn" data-letter="V">V</button>
+      <button class="key-btn" data-letter="B">B</button>
+      <button class="key-btn" data-letter="N">N</button>
+      <button class="key-btn" data-letter="M">M</button>
+    </div>
   </div>
 
 </div>
@@ -156,18 +236,28 @@ RANKING
 <section id="ranking-screen" class="screen hidden">
 
 <header class="inner-screen-header">
-
-  <button id="back-from-ranking-btn">←</button>
-  <h2>🏆 Ranking</h2>
-  <button id="clear-ranking-btn">Clear</button>
-
+  <button id="back-from-ranking-btn" class="btn btn-ghost btn-sm">←</button>
+  <h2 class="inner-screen-title">🏆 Ranking</h2>
+  <button id="clear-ranking-btn" class="btn btn-ghost btn-sm">Clear</button>
 </header>
 
 <div class="inner-screen-body">
 
-  <table>
-    <tbody id="ranking-list"></tbody>
-  </table>
+  <div class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th class="col-rank">#</th>
+          <th>Player</th>
+          <th class="col-score">Score</th>
+          <th>Wins</th>
+          <th>Losses</th>
+          <th>Matches</th>
+        </tr>
+      </thead>
+      <tbody id="ranking-list"></tbody>
+    </table>
+  </div>
 
   <div id="ranking-empty" class="hidden">No players yet</div>
 
@@ -181,23 +271,23 @@ HISTORY
 <section id="history-screen" class="screen hidden">
 
 <header class="inner-screen-header">
-
-  <button id="back-from-history-btn">←</button>
-  <h2>📋 History</h2>
-  <button id="clear-history-btn">Clear</button>
-
+  <button id="back-from-history-btn" class="btn btn-ghost btn-sm">←</button>
+  <h2 class="inner-screen-title">📋 History</h2>
+  <button id="clear-history-btn" class="btn btn-ghost btn-sm">Clear</button>
 </header>
 
 <div class="inner-screen-body">
 
-  <input id="history-filter-input" placeholder="Filter..." />
-  <select id="history-filter-result">
-    <option value="all">All</option>
-    <option value="win">Win</option>
-    <option value="lose">Lose</option>
-  </select>
+  <div class="history-filter-bar">
+    <input id="history-filter-input" class="form-input" placeholder="Filter by player or word..." />
+    <select id="history-filter-result" class="form-input">
+      <option value="all">All</option>
+      <option value="win">Win</option>
+      <option value="lose">Lose</option>
+    </select>
+  </div>
 
-  <div id="history-list"></div>
+  <div id="history-list" class="history-list"></div>
 
   <div id="history-empty" class="hidden">No matches yet</div>
 

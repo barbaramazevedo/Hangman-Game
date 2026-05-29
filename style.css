@@ -412,6 +412,10 @@ body::before {
   gap: var(--sp-lg);
 }
 
+#player-input-section #confirm-player-btn {
+  margin-top: var(--sp-md);
+}
+
 #player-stats {
   text-align: center;
 }

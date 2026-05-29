@@ -3,6 +3,18 @@
    ========================================================= */
 let currentPlayerGlobal = null;
 
+function resetPlayerForm() {
+    const playerNameInput     = document.getElementById("player-name-input");
+    const playerInputSection  = document.getElementById("player-input-section");
+    const playerConfirmedSection = document.getElementById("player-confirmed-section");
+    const cardTitle           = document.querySelector("#player-form-card .card-title");
+
+    playerNameInput.value = "";
+    playerConfirmedSection.classList.add("hidden");
+    playerInputSection.classList.remove("hidden");
+    cardTitle.classList.remove("hidden");
+}
+
 /* =========================================================
    PLAYER FORM (EXISTENTE + AJUSTADO)
    ========================================================= */
@@ -47,18 +59,14 @@ function registerPlayerFormEvents() {
 
     function onStartGame() {
         registerPlayer(confirmedName);
-        setCurrentPlayer(confirmedName);
         currentPlayerGlobal = confirmedName;
 
         showScreen("game-screen");
-        startRound();
+        startRound(confirmedName);
     }
 
     function onChangeName() {
-        playerNameInput.value = "";
-        playerConfirmedSection.classList.add("hidden");
-        playerInputSection.classList.remove("hidden");
-        cardTitle.classList.remove("hidden");
+        resetPlayerForm();
     }
 
     btnConfirm.addEventListener("click", onConfirmPlayer);
@@ -136,10 +144,7 @@ function bindKeyboardEvents() {
     keyboard.addEventListener("click", (e) => {
         const btn = e.target.closest(".key-btn");
         if (!btn || btn.disabled) return;
-
-        const letter = btn.dataset.letter;
-
-        handleGuess(letter, btn);
+        checkLetter(btn.dataset.letter);
     });
 }
 
@@ -148,17 +153,28 @@ function bindKeyboardEvents() {
    ========================================================= */
 function registerGameActions() {
     document.getElementById("new-round-btn").addEventListener("click", () => {
-        startRound();
+        startRound(currentPlayerGlobal);
+    });
+
+    document.getElementById("try-again-btn").addEventListener("click", () => {
+        startRound(currentPlayerGlobal);
     });
 
     document.getElementById("reset-game-btn").addEventListener("click", () => {
-        resetGame();
+        resetPlayerForm();
+        showScreen("welcome-screen");
+    });
+
+    document.getElementById("change-player-btn2").addEventListener("click", () => {
+        resetPlayerForm();
         showScreen("welcome-screen");
     });
 
     document.getElementById("back-to-welcome-btn").addEventListener("click", () => {
         showScreen("welcome-screen");
     });
+
+    document.getElementById("hint-btn").addEventListener("click", useHint);
 }
 
 /* =========================================================
