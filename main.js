@@ -1,4 +1,12 @@
-function registerEvents() {
+/* =========================================================
+   GLOBAL STATE
+   ========================================================= */
+let currentPlayerGlobal = null;
+
+/* =========================================================
+   PLAYER FORM (EXISTENTE + AJUSTADO)
+   ========================================================= */
+function registerPlayerFormEvents() {
     const playerNameInput = document.getElementById("player-name-input");
     const btnConfirm = document.getElementById("confirm-player-btn");
     const btnStartGame = document.getElementById("start-game-btn");
@@ -6,7 +14,6 @@ function registerEvents() {
     const playerInputSection = document.getElementById("player-input-section");
     const playerConfirmedSection = document.getElementById("player-confirmed-section");
     const confirmedPlayerName = document.getElementById("confirmed-player-name");
-
     const cardTitle = document.querySelector("#player-form-card .card-title");
 
     let confirmedName = null;
@@ -22,10 +29,15 @@ function registerEvents() {
         confirmedName = name;
 
         const player = searchPlayer(name);
-        document.getElementById("stat-wins").textContent    = player ? player.wins    : 0;
-        document.getElementById("stat-losses").textContent  = player ? player.losses  : 0;
-        document.getElementById("stat-matches").textContent = player ? player.matches : 0;
-        document.getElementById("stat-score").textContent   = player ? player.score   : 0;
+
+        document.getElementById("stat-wins").textContent =
+            player ? player.wins : 0;
+        document.getElementById("stat-losses").textContent =
+            player ? player.losses : 0;
+        document.getElementById("stat-matches").textContent =
+            player ? player.matches : 0;
+        document.getElementById("stat-score").textContent =
+            player ? player.score : 0;
 
         cardTitle.classList.add("hidden");
         playerInputSection.classList.add("hidden");
@@ -35,18 +47,11 @@ function registerEvents() {
 
     function onStartGame() {
         registerPlayer(confirmedName);
-        showScreen("game-screen");
-        startRound(confirmedName);
-    }
+        setCurrentPlayer(confirmedName);
+        currentPlayerGlobal = confirmedName;
 
-    function showScreen(id) {
-        document.querySelectorAll(".screen").forEach(function(s) {
-            s.classList.remove("active");
-            s.classList.add("hidden");
-        });
-        const target = document.getElementById(id);
-        target.classList.remove("hidden");
-        target.classList.add("active");
+        showScreen("game-screen");
+        startRound();
     }
 
     function onChangeName() {
@@ -57,19 +62,117 @@ function registerEvents() {
     }
 
     btnConfirm.addEventListener("click", onConfirmPlayer);
-    playerNameInput.addEventListener("keydown", function(event) {
-        if (event.key === "Enter") {
-            onConfirmPlayer();
-        }
+    playerNameInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") onConfirmPlayer();
     });
+
     btnStartGame.addEventListener("click", onStartGame);
     btnChangeName.addEventListener("click", onChangeName);
-    document.querySelectorAll(".key-btn").forEach(function(btn) {
-        btn.addEventListener("click", function() {
-            checkLetter(btn.dataset.letter);
-        });
-    });
-    document.getElementById("hint-btn").addEventListener("click", useHint);
 }
 
+/* =========================================================
+   SCREEN CONTROL
+   ========================================================= */
+function showScreen(screenId) {
+    document.querySelectorAll(".screen").forEach((s) => {
+        s.classList.remove("active");
+        s.classList.add("hidden");
+    });
+
+    const target = document.getElementById(screenId);
+    target.classList.remove("hidden");
+    target.classList.add("active");
+}
+
+/* =========================================================
+   RANKING
+   ========================================================= */
+function registerRankingEvents() {
+    document.getElementById("view-ranking-btn").addEventListener("click", () => {
+        renderizarRanking();
+        showScreen("ranking-screen");
+    });
+
+    document.getElementById("back-from-ranking-btn").addEventListener("click", () => {
+        showScreen("welcome-screen");
+    });
+
+    document.getElementById("clear-ranking-btn").addEventListener("click", () => {
+        if (!confirm("Clear all ranking data? This cannot be undone.")) return;
+        clearRanking();
+        renderizarRanking();
+    });
+}
+
+/* =========================================================
+   HISTORY
+   ========================================================= */
+function registerMatchHistory() {
+    document.getElementById("view-history-btn").addEventListener("click", () => {
+        renderHistory();
+        showScreen("history-screen");
+    });
+
+    document.getElementById("back-from-history-btn").addEventListener("click", () => {
+        showScreen("welcome-screen");
+    });
+
+    document.getElementById("clear-history-btn").addEventListener("click", () => {
+        if (!confirm("Clear all match history? This cannot be undone.")) return;
+        clearHistory();
+        renderHistory();
+    });
+
+    document.getElementById("history-filter-input").addEventListener("input", renderHistory);
+    document.getElementById("history-filter-result").addEventListener("change", renderHistory);
+}
+
+/* =========================================================
+   🎮 KEYBOARD (MOUSE CLICK — ESSENCIAL DA SUA PARTE)
+   ========================================================= */
+function bindKeyboardEvents() {
+    const keyboard = document.getElementById("virtual-keyboard");
+
+    keyboard.addEventListener("click", (e) => {
+        const btn = e.target.closest(".key-btn");
+        if (!btn || btn.disabled) return;
+
+        const letter = btn.dataset.letter;
+
+        handleGuess(letter, btn);
+    });
+}
+
+/* =========================================================
+   GAME ACTIONS BUTTONS
+   ========================================================= */
+function registerGameActions() {
+    document.getElementById("new-round-btn").addEventListener("click", () => {
+        startRound();
+    });
+
+    document.getElementById("reset-game-btn").addEventListener("click", () => {
+        resetGame();
+        showScreen("welcome-screen");
+    });
+
+    document.getElementById("back-to-welcome-btn").addEventListener("click", () => {
+        showScreen("welcome-screen");
+    });
+}
+
+/* =========================================================
+   INIT ALL EVENTS
+   ========================================================= */
+function registerEvents() {
+    registerPlayerFormEvents();
+    bindKeyboardEvents();
+    registerRankingEvents();
+    registerMatchHistory();
+    registerGameActions();
+}
+
+/* =========================================================
+   START APP
+   ========================================================= */
 registerEvents();
