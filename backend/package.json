@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --exec tsx src/server.ts",
+    "migrate": "tsx src/db/migrate.ts",
     "build": "tsc",
     "start": "node dist/server.js"
   },
