@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hangman Game</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+<div id="app">
+
+<!-- =========================================================
+WELCOME SCREEN
+========================================================= -->
+<section id="welcome-screen" class="screen active">
+
+  <div class="welcome-wrapper">
+
+    <header class="welcome-header">
+      <div class="welcome-logo">🪢</div>
+      <h1 class="game-title">Hangman Game</h1>
+    </header>
+
+    <div id="player-form-card" class="welcome-card">
+
+      <div id="player-input-section">
+        <h2 class="card-title">Enter Your Name</h2>
+
+        <input id="player-name-input" class="form-input" placeholder="Type your name..." />
+        <span id="player-name-error" class="form-error hidden">Invalid name</span>
+
+        <button id="confirm-player-btn" class="btn btn-primary btn-lg">OK</button>
+      </div>
+
+      <div id="player-confirmed-section" class="hidden">
+
+        <h2 class="form-title">Playing as</h2>
+        <p id="confirmed-player-name"></p>
+
+        <div>
+          <p>Wins: <span id="stat-wins">0</span></p>
+          <p>Losses: <span id="stat-losses">0</span></p>
+          <p>Matches: <span id="stat-matches">0</span></p>
+          <p>Score: <span id="stat-score">0</span></p>
+        </div>
+
+        <button id="start-game-btn" class="btn btn-primary btn-lg">Start Game</button>
+        <button id="change-player-btn" class="btn btn-ghost">Change</button>
+
+      </div>
+
+    </div>
+
+    <div class="welcome-nav">
+      <button id="view-ranking-btn" class="btn btn-outline">🏆 Ranking</button>
+      <button id="view-history-btn" class="btn btn-outline">📋 History</button>
+      <button id="view-multiplayer-btn" class="btn btn-primary">🎮 Multiplayer</button>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- =========================================================
+GAME SCREEN
+========================================================= -->
+<section id="game-screen" class="screen hidden">
+
+<header class="game-topbar">
+
+  <button id="back-to-welcome-btn" class="btn btn-ghost btn-sm">←</button>
+
+  <div class="topbar-player-info">
+    <span class="topbar-label">Player</span>
+    <span id="current-player-name" class="topbar-player-name">---</span>
+  </div>
+
+  <div class="topbar-stats">
+    <div class="stat-badge">
+      <span class="stat-label">Score</span>
+      <span id="player-score" class="stat-value">0</span>
+    </div>
+    <div class="stat-badge">
+      <span class="stat-label">Wins</span>
+      <span id="player-wins" class="stat-value stat-wins">0</span>
+    </div>
+    <div class="stat-badge">
+      <span class="stat-label">Losses</span>
+      <span id="player-losses" class="stat-value stat-losses">0</span>
+    </div>
+    <div class="stat-badge">
+      <span class="stat-label">Matches</span>
+      <span id="player-matches" class="stat-value">0</span>
+    </div>
+  </div>
+
+</header>
+
+
+<main class="game-main">
+
+<!-- LEFT: Hangman -->
+<div class="game-panel panel-hangman">
+
+  <div class="hangman-drawing-wrapper">
+    <svg class="hangman-svg" viewBox="0 0 200 250">
+      <line class="gallows-part" x1="20" y1="240" x2="180" y2="240"/>
+      <line class="gallows-part" x1="60" y1="240" x2="60" y2="20"/>
+      <line class="gallows-part" x1="60" y1="20" x2="130" y2="20"/>
+      <line class="gallows-part" x1="130" y1="20" x2="130" y2="50"/>
+      <circle id="hangman-head" class="hangman-part" cx="130" cy="65" r="15"/>
+      <line id="hangman-body" class="hangman-part" x1="130" y1="80" x2="130" y2="150"/>
+      <line id="hangman-left-arm" class="hangman-part" x1="130" y1="100" x2="100" y2="130"/>
+      <line id="hangman-right-arm" class="hangman-part" x1="130" y1="100" x2="160" y2="130"/>
+      <line id="hangman-left-leg" class="hangman-part" x1="130" y1="150" x2="100" y2="190"/>
+      <line id="hangman-right-leg" class="hangman-part" x1="130" y1="150" x2="160" y2="190"/>
+    </svg>
+  </div>
+
+  <div class="attempts-counter">
+    <span class="attempts-label">Attempts left</span>
+    <span id="attempts-remaining" class="attempts-number">6</span>
+    <div class="attempts-dots">
+      <span class="attempt-dot" data-dot="1"></span>
+      <span class="attempt-dot" data-dot="2"></span>
+      <span class="attempt-dot" data-dot="3"></span>
+      <span class="attempt-dot" data-dot="4"></span>
+      <span class="attempt-dot" data-dot="5"></span>
+      <span class="attempt-dot" data-dot="6"></span>
+    </div>
+  </div>
+
+  <div class="wrong-letters-section">
+    <p class="section-label">Wrong letters</p>
+    <div id="wrong-letters-container" class="wrong-letters-list"></div>
+  </div>
+
+</div>
+
+<!-- RIGHT: Word + Keyboard -->
+<div class="game-panel panel-word-keyboard">
+
+  <p class="word-category-hint">Category: <span id="word-category" class="category-value">---</span></p>
+
+  <div class="word-display-wrapper">
+    <div id="word-display" class="word-display"></div>
+  </div>
+
+  <div class="status-area">
+    <div id="status-loading" class="status-message status-loading hidden">
+      <div class="status-spinner"></div>
+    </div>
+
+    <div id="status-win" class="status-message status-win hidden">
+      <span class="status-emoji">🎉</span>
+      <span class="status-text">You won!</span>
+      <div style="display:flex;gap:0.5rem;margin-top:0.5rem">
+        <button id="new-round-btn" class="btn btn-primary btn-sm">New Round</button>
+        <button id="reset-game-btn" class="btn btn-ghost btn-sm">Change Player</button>
+      </div>
+    </div>
+
+    <div id="status-lose" class="status-message status-lose hidden">
+      <span class="status-emoji">😢</span>
+      <span class="status-text">You lost!</span>
+      <span class="status-sub">The word was: <span id="revealed-word" class="revealed-word"></span></span>
+      <div style="display:flex;gap:0.5rem;margin-top:0.5rem">
+        <button id="try-again-btn" class="btn btn-primary btn-sm">Try Again</button>
+        <button id="change-player-btn2" class="btn btn-ghost btn-sm">Change Player</button>
+      </div>
+    </div>
+
+    <div id="status-error" class="status-message status-error hidden">
+      <span class="status-emoji">⚠️</span>
+      <span class="status-text">Error loading word.</span>
+    </div>
+  </div>
+
+  <div id="hint-section">
+    <div id="hint-text" class="hidden" style="font-size:0.82rem;color:var(--color-text-muted);text-align:center;padding:0.5rem 0"></div>
+    <div style="text-align:center">
+      <button id="hint-btn" class="btn btn-outline btn-sm">💡 Hint (−2 attempts)</button>
+    </div>
+  </div>
+
+  <div id="virtual-keyboard" class="virtual-keyboard">
+    <div class="keyboard-row">
+      <button class="key-btn" data-letter="Q">Q</button>
+      <button class="key-btn" data-letter="W">W</button>
+      <button class="key-btn" data-letter="E">E</button>
+      <button class="key-btn" data-letter="R">R</button>
+      <button class="key-btn" data-letter="T">T</button>
+      <button class="key-btn" data-letter="Y">Y</button>
+      <button class="key-btn" data-letter="U">U</button>
+      <button class="key-btn" data-letter="I">I</button>
+      <button class="key-btn" data-letter="O">O</button>
+      <button class="key-btn" data-letter="P">P</button>
+    </div>
+    <div class="keyboard-row">
+      <button class="key-btn" data-letter="A">A</button>
+      <button class="key-btn" data-letter="S">S</button>
+      <button class="key-btn" data-letter="D">D</button>
+      <button class="key-btn" data-letter="F">F</button>
+      <button class="key-btn" data-letter="G">G</button>
+      <button class="key-btn" data-letter="H">H</button>
+      <button class="key-btn" data-letter="J">J</button>
+      <button class="key-btn" data-letter="K">K</button>
+      <button class="key-btn" data-letter="L">L</button>
+    </div>
+    <div class="keyboard-row">
+      <button class="key-btn" data-letter="Z">Z</button>
+      <button class="key-btn" data-letter="X">X</button>
+      <button class="key-btn" data-letter="C">C</button>
+      <button class="key-btn" data-letter="V">V</button>
+      <button class="key-btn" data-letter="B">B</button>
+      <button class="key-btn" data-letter="N">N</button>
+      <button class="key-btn" data-letter="M">M</button>
+    </div>
+  </div>
+
+</div>
+
+</main>
+
+</section>
+
+
+<!-- =========================================================
+RANKING
+========================================================= -->
+<section id="ranking-screen" class="screen hidden">
+
+<header class="inner-screen-header">
+  <button id="back-from-ranking-btn" class="btn btn-ghost btn-sm">←</button>
+  <h2 class="inner-screen-title">🏆 Ranking</h2>
+  <button id="clear-ranking-btn" class="btn btn-ghost btn-sm">Clear</button>
+</header>
+
+<div class="inner-screen-body">
+
+  <div class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th class="col-rank">#</th>
+          <th>Player</th>
+          <th class="col-score">Score</th>
+          <th>Wins</th>
+          <th>Losses</th>
+          <th>Matches</th>
+        </tr>
+      </thead>
+      <tbody id="ranking-list"></tbody>
+    </table>
+  </div>
+
+  <div id="ranking-empty" class="hidden">No players yet</div>
+
+</div>
+</section>
+
+
+<!-- =========================================================
+HISTORY
+========================================================= -->
+<section id="history-screen" class="screen hidden">
+
+<header class="inner-screen-header">
+  <button id="back-from-history-btn" class="btn btn-ghost btn-sm">←</button>
+  <h2 class="inner-screen-title">📋 History</h2>
+  <button id="clear-history-btn" class="btn btn-ghost btn-sm">Clear</button>
+</header>
+
+<div class="inner-screen-body">
+
+  <div class="history-filter-bar">
+    <input id="history-filter-input" class="form-input" placeholder="Filter by player or word..." />
+    <select id="history-filter-result" class="form-input">
+      <option value="all">All</option>
+      <option value="win">Win</option>
+      <option value="lose">Lose</option>
+    </select>
+  </div>
+
+  <div id="history-list" class="history-list"></div>
+
+  <div id="history-empty" class="hidden">No matches yet</div>
+
+</div>
+
+</section>
+
+<!-- =========================================================
+MULTIPLAYER — LOGIN SCREEN
+========================================================= -->
+<section id="multiplayer-login-screen" class="screen hidden">
+
+<header class="inner-screen-header">
+  <button id="back-from-multiplayer-btn" class="btn btn-ghost btn-sm">←</button>
+  <h2 class="inner-screen-title">🎮 Multiplayer</h2>
+  <div></div>
+</header>
+
+<div class="inner-screen-body lobby-login-body">
+
+  <div class="lobby-card">
+    <h3 class="lobby-section-title">Who are you?</h3>
+    <input id="mp-username-input" class="form-input" placeholder="Enter your username..." />
+    <input id="mp-email-input" class="form-input" placeholder="Email..." style="margin-top:0.5rem" />
+    <input id="mp-password-input" class="form-input" type="password" placeholder="Password..." style="margin-top:0.5rem" />
+    <div class="lobby-auth-btns">
+      <button id="mp-login-btn" class="btn btn-primary">Login</button>
+      <button id="mp-register-btn" class="btn btn-outline">Register</button>
+    </div>
+    <p id="mp-auth-error" class="lobby-error hidden"></p>
+    <p id="mp-auth-success" class="lobby-success hidden"></p>
+  </div>
+
+</div>
+</section>
+
+
+<!-- =========================================================
+MULTIPLAYER — LOBBY SCREEN
+========================================================= -->
+<section id="multiplayer-lobby-screen" class="screen hidden">
+
+<header class="inner-screen-header">
+  <button id="lobby-back-btn" class="btn btn-ghost btn-sm">← Leave</button>
+  <h2 class="inner-screen-title">🎮 Lobby</h2>
+  <span id="lobby-username-badge" class="lobby-badge"></span>
+</header>
+
+<div class="inner-screen-body lobby-body">
+
+  <!-- CREATE ROOM -->
+  <div class="lobby-card">
+    <h3 class="lobby-section-title">Create a Room</h3>
+    <div class="lobby-row">
+      <label class="lobby-label">Max Players</label>
+      <select id="lobby-max-players" class="form-input" style="max-width:100px">
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4" selected>4</option>
+      </select>
+    </div>
+    <button id="lobby-create-btn" class="btn btn-primary btn-lg" style="width:100%;margin-top:0.75rem">Create Room</button>
+  </div>
+
+  <!-- JOIN ROOM -->
+  <div class="lobby-card">
+    <h3 class="lobby-section-title">Join a Room</h3>
+    <div class="lobby-row">
+      <input id="lobby-room-code-input" class="form-input" placeholder="Room code (e.g. AB1234)" maxlength="6" style="text-transform:uppercase;letter-spacing:0.15em;font-weight:700" />
+      <button id="lobby-join-btn" class="btn btn-primary">Join</button>
+    </div>
+    <p id="lobby-error" class="lobby-error hidden"></p>
+  </div>
+
+  <!-- ROOM STATUS -->
+  <div id="lobby-room-panel" class="lobby-card lobby-room-panel hidden">
+    <div class="lobby-room-header">
+      <div>
+        <span class="lobby-label">Room Code</span>
+        <span id="lobby-room-code-display" class="lobby-room-code"></span>
+      </div>
+      <span id="lobby-room-status-badge" class="lobby-status-badge">Waiting</span>
+    </div>
+
+    <div class="lobby-players-list" id="lobby-players-list"></div>
+
+    <p id="lobby-turn-info" class="lobby-turn-info hidden"></p>
+
+    <button id="lobby-start-btn" class="btn btn-primary btn-lg hidden" style="width:100%;margin-top:0.75rem">Start Game</button>
+    <button id="lobby-leave-btn" class="btn btn-ghost btn-sm" style="width:100%;margin-top:0.5rem">Leave Room</button>
+  </div>
+
+</div>
+</section>
+
+
+<!-- =========================================================
+MULTIPLAYER — GAME SCREEN
+========================================================= -->
+<section id="multiplayer-game-screen" class="screen hidden">
+
+<header class="game-topbar">
+  <button id="mp-game-leave-btn" class="btn btn-ghost btn-sm">← Leave</button>
+  <div class="topbar-player-info">
+    <span class="topbar-label">Room</span>
+    <span id="mp-room-code-topbar" class="topbar-player-name">---</span>
+  </div>
+  <div id="mp-turn-badge" class="mp-turn-badge">Waiting...</div>
+</header>
+
+<main class="game-main">
+
+<!-- LEFT: Hangman + Players -->
+<div class="game-panel panel-hangman">
+
+  <div class="hangman-drawing-wrapper">
+    <svg class="hangman-svg" viewBox="0 0 200 250">
+      <line class="gallows-part" x1="20" y1="240" x2="180" y2="240"/>
+      <line class="gallows-part" x1="60" y1="240" x2="60" y2="20"/>
+      <line class="gallows-part" x1="60" y1="20" x2="130" y2="20"/>
+      <line class="gallows-part" x1="130" y1="20" x2="130" y2="50"/>
+      <circle id="mp-hangman-head" class="hangman-part" cx="130" cy="65" r="15"/>
+      <line id="mp-hangman-body" class="hangman-part" x1="130" y1="80" x2="130" y2="150"/>
+      <line id="mp-hangman-left-arm" class="hangman-part" x1="130" y1="100" x2="100" y2="130"/>
+      <line id="mp-hangman-right-arm" class="hangman-part" x1="130" y1="100" x2="160" y2="130"/>
+      <line id="mp-hangman-left-leg" class="hangman-part" x1="130" y1="150" x2="100" y2="190"/>
+      <line id="mp-hangman-right-leg" class="hangman-part" x1="130" y1="150" x2="160" y2="190"/>
+    </svg>
+  </div>
+
+  <div class="mp-players-status" id="mp-players-status"></div>
+
+</div>
+
+<!-- RIGHT: Word + Keyboard -->
+<div class="game-panel panel-word-keyboard">
+
+  <p class="word-category-hint">Category: <span id="mp-word-category" class="category-value">---</span></p>
+
+  <div class="word-display-wrapper">
+    <div id="mp-word-display" class="word-display"></div>
+  </div>
+
+  <div class="status-area">
+    <div id="mp-status-waiting" class="status-message status-loading hidden">
+      <div class="status-spinner"></div>
+      <span style="margin-left:0.5rem">Waiting for players...</span>
+    </div>
+    <div id="mp-status-win" class="status-message status-win hidden">
+      <span class="status-emoji">🎉</span>
+      <span id="mp-win-text" class="status-text">You won!</span>
+      <button id="mp-play-again-btn" class="btn btn-primary btn-sm" style="margin-top:0.5rem">Play Again</button>
+    </div>
+    <div id="mp-status-lose" class="status-message status-lose hidden">
+      <span class="status-emoji">😢</span>
+      <span id="mp-lose-text" class="status-text">Game over!</span>
+      <span class="status-sub">The word was: <span id="mp-revealed-word" class="revealed-word"></span></span>
+      <button id="mp-play-again-btn2" class="btn btn-primary btn-sm" style="margin-top:0.5rem">Play Again</button>
+    </div>
+  </div>
+
+  <div id="mp-virtual-keyboard" class="virtual-keyboard">
+    <div class="keyboard-row">
+      <button class="key-btn" data-letter="Q">Q</button><button class="key-btn" data-letter="W">W</button>
+      <button class="key-btn" data-letter="E">E</button><button class="key-btn" data-letter="R">R</button>
+      <button class="key-btn" data-letter="T">T</button><button class="key-btn" data-letter="Y">Y</button>
+      <button class="key-btn" data-letter="U">U</button><button class="key-btn" data-letter="I">I</button>
+      <button class="key-btn" data-letter="O">O</button><button class="key-btn" data-letter="P">P</button>
+    </div>
+    <div class="keyboard-row">
+      <button class="key-btn" data-letter="A">A</button><button class="key-btn" data-letter="S">S</button>
+      <button class="key-btn" data-letter="D">D</button><button class="key-btn" data-letter="F">F</button>
+      <button class="key-btn" data-letter="G">G</button><button class="key-btn" data-letter="H">H</button>
+      <button class="key-btn" data-letter="J">J</button><button class="key-btn" data-letter="K">K</button>
+      <button class="key-btn" data-letter="L">L</button>
+    </div>
+    <div class="keyboard-row">
+      <button class="key-btn" data-letter="Z">Z</button><button class="key-btn" data-letter="X">X</button>
+      <button class="key-btn" data-letter="C">C</button><button class="key-btn" data-letter="V">V</button>
+      <button class="key-btn" data-letter="B">B</button><button class="key-btn" data-letter="N">N</button>
+      <button class="key-btn" data-letter="M">M</button>
+    </div>
+  </div>
+
+</div>
+
+</main>
+</section>
+
+
+</div>
+
+<!-- SCRIPTS (ORDEM IMPORTA) -->
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="storage.js"></script>
+<script src="utils.js"></script>
+<script src="players.js"></script>
+<script src="ranking.js"></script>
+<script src="history.js"></script>
+<script src="api.js"></script>
+<script src="game.js"></script>
+<script src="ui.js"></script>
+<script src="update.js"></script>
+<script src="lobby.js"></script>
+<script src="main.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,7 @@
+# Backend
+backend/node_modules/
+backend/dist/
+backend/.env
+backend/hangman.db
+backend/hangman.db-wal
+backend/hangman.db-shm
