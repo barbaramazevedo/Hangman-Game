@@ -19,6 +19,21 @@ const HANGMAN_PARTS = [
 ];
 
 
+async function fetchWord() {
+    try {
+        const response = await fetch("https://random-words-api.vercel.app/word");
+        if (!response.ok) throw new Error("API error");
+        const data = await response.json();
+        return {
+            word: data.word.toUpperCase(),
+            definition: data.definition,
+            category: "English Word"
+        };
+    } catch (error) {
+        return getRandomWord();
+    }
+}
+
 async function startRound(playerName) {
     currentPlayer = playerName;
     guessedLetters = [];
